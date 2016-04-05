@@ -1,0 +1,5 @@
+The program becomes trapped in the while loop. The quotient continues 
+increasing for as long as the program can run (as remainder = remainder 
+- divisor for divisor = 0 never changes the remainder, and thus the remainder
+remains >=0). Interestingly, the value of the remainder shifts between FFFFF5 
+(near max value) and A.

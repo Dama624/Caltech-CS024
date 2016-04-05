@@ -1,3 +1,22 @@
 Practice Problems 2.46
 
-A) 0.1 is the nonterminating sequence: 0.000110011[0011]...
+A)
+0.1 is the nonterminating sequence: 0.000110011[0011]...
+The program approximated 0.1 as the first 23 digits after the decimal point.
+Thus 0.1 - x = 0.000000000000000000000001100[1100]... (base 2)
+
+B)
+0.1 is represented as 0.0001100[1100]... in binary
+From part A, we see that 0.1 - x = 0.(20 0's)...0001100[1100]
+= 2^-20 (base 10) * 0.0001100[1100]... (base 2)
+Because we already represent 0.0001100[1100]... as 0.1
+= 2^-20 (base 10) * 0.1 (base 10) = 9.537 * 10 ^ -8 (base 10)
+
+C)
+Each count (that is, each "0.1 second") of this system is actually
+9.537 * 10 ^ -8 seconds off.
+100 hours * 60 (min/hr) * 60 (sec/min) * 10 (count/sec) = 3,600,000 counts
+9.537 * 10 ^ -8 * 3600000 = 0.343 seconds off
+
+D)
+2000 m/sec * 0.343 sec = 686 meters off

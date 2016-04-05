@@ -53,8 +53,77 @@ void alu_eval(ALU *alu) {
     result = 0;
 
     /*======================================*/
-    /* TODO:  Implement the ALU logic here. */
+    /* DONE:  Implement the ALU logic here. */
     /*======================================*/
+    // Account for each ALU operation
+    switch (aluop)
+    {
+        case ALUOP_ADD:
+            // Simple addition
+            result = A + B;
+            break;
+        case ALUOP_INV:
+            // Bitwise inversion. Only applies to A!
+            result = ~A;
+            break;
+        case ALUOP_SUB:
+            // Simple subtraction
+            result = A - B;
+            break;
+        case ALUOP_XOR:
+            // Bitwise exclusive or
+            result = A ^ B;
+            break;
+        case ALUOP_OR:
+            // Bitwise or
+            result = A | B;
+            break;
+        case ALUOP_INCR:
+            // Incrementing a register
+            result = A + 1;
+            break;
+        case ALUOP_AND:
+            // Bitwise and
+            result = A & B;
+            break;
+        case ALUOP_SRA:
+            // Arithmetic shift right
+            // According to the Problem Set appendix, the leading bit must
+            // be the same as the source's (despite uint32_t typed source)
+            result = A >> 1;
+            // Mask with 0x80000000 to check if leading bit of source is 1
+            if ((A & 0x80000000) == 0)
+            {
+                // Leading bit of source is 0
+                // Leading bit of result must be 0 too
+                result &= 0x7FFFFFFF;
+            }
+            else
+            {
+                // Leading bit of source is 1
+                // Leading bit of result must be 1 too
+                result |= 0x80000000;
+            }
+            break;
+        case ALUOP_SRL:
+            // Logical shift right
+            // Our source types are uint32_t (unsigned) so C defaults >> to
+            // unsigned; we set the leading bit to 0 just in case anyway
+            result = A >> 1;
+            result &= 0x7FFFFFFF;
+            break;
+        case ALUOP_SLA:
+            // Arithmetic shift left
+            // According to the Problem Set appendix, this is just a <<
+            // (i.e. no distinction made between Arithmetic and Logical)
+            result = A << 1;
+            break;
+        case ALUOP_SLL:
+            // Logical shift left
+            // See above
+            result = A << 1;
+            break;
+    }
 
     pin_set(alu->out, result);
 }

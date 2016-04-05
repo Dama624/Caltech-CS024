@@ -1,0 +1,39 @@
+# dividend in R0
+# divisor in R1
+# quotient in R6
+# remainder in R7
+# zero in R2
+# 0x80000000 in R3
+# remainder* in R4
+# ~r & r*(m) in R5
+
+Quotient = 0
+Remainder = dividend
+while true do
+	remainder = remainder - divisor
+	if remainder >= 0 then
+		quotient = quotient + 1
+	else
+		break
+done
+remainder = remainder + divisor
+return quotient, remainder
+
+
+R6 <- R6 - R6 # Quotient = 0
+R7 <- R0 + R2 # Remainder = dividend + 0
+WHILE:
+	R4 <- R7 - R1 # remainder* = remainder - divisor
+	R7 <- ~R7 # invert R7
+	R5 <- R4 & R3 # mask leading bit of remainder*
+	R5 <- R7 & R5 # remainder* < 0 if ~remainder & masked remainder*;
+	R7 <- ~R7 # revert R7
+	BNZ R5, ELSE # R5 = 1 if remainder - divisor < 0; R5 = 0 otherwise
+	R7 <- R7 - R1 # remainder = remainder - divisor (since it doesn't overflow)
+	R6 <- R6 + 1 # quotient = quotient + 1
+	BNZ R3, WHILE # go back to while loop
+
+ELSE:
+	R7 <- R4 + R1
+	DONE
+

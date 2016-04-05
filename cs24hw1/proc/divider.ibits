@@ -1,0 +1,13 @@
+0BB6 # R6 <- R6 - R6; Quotient = 0
+0217 # R7 <- R0 + R2; Remainder = dividend + 0
+0BCC # WHILE (2): R4 <- R7 - R1; remainder* = remainder - divisor; will overflow if remainder* < 0
+07C7 # R7 <- ~R7; invert remainder
+231D # R5 <- R4 & R3; mask leading bit of remainder*; leading bit = 1 if remainder* overflow
+23ED # R5 <- R7 & R5; if remainder* < 0, ~remainder & masked remainder*;
+07C7 # R7 <- ~R7; revert R7
+294B # BNZ R5, ELSE; if remainder - divisor < 0 branch ELSE
+0BCF # R7 <- R7 - R1; remainder = remainder - divisor (since it doesn't overflow)
+1786 # R6 <- R6 + 1; quotient = quotient + 1
+28C2 # BNZ R3, WHILE; if TRUE branch WHILE
+030F # ELSE (11): R7 <- R4 + R1; remainder = remainder* + divisor
+3C00 # DONE; quotient stored in R6; remainder stored in R7

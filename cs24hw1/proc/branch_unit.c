@@ -57,11 +57,20 @@ void branch_test(BranchUnit *bru) {
     aluop = pin_read(bru->op);
 
     /*======================================================================*/
-    /* TODO:  If aluop is BNZ, and A is nonzero, set bru->branch to BRANCH. */
+    /* DONE:  If aluop is BNZ, and A is nonzero, set bru->branch to BRANCH. */
     /*        Otherwise, set bru->branch to NOBRANCH.                       */
     /*                                                                      */
     /*        Use pin_set(bru->branch, ...) to set the value on the bus.    */
     /*======================================================================*/
+
+    if ((aluop == ALUOP_BNZ) && (A != 0))
+    {
+        pin_set(bru->branch, BRANCH);
+    }
+    else
+    {
+        pin_set(bru->branch, NOBRANCH);
+    }
 
 }
 

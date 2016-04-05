@@ -1,0 +1,20 @@
+The results are different because floats have a fixed precision. If floats
+of wildly different magnitudes are added together, some precision is lost.
+For example, adding 1 followed by 1 billion 1/billion will result in 1 because
+1 + 1/billion = 1 (precision is lost).
+
+Of the three approaches, the "most accurate" would be addition with increasing
+magnitude. Adding in increasing magnitude helps to prevent precision loss;
+with the same example, adding the 1 billion 1/billion first gives 1, and then
+adding 1 + 1 gives 2, the correct answer. Going in reverse order would result
+in precision loss, as previously discussed.
+
+Two ways the accurate method exhibits large errors come to mind:
+	1) If the difference in magnitude between ascending magnitudes is too
+	great, the same issues as mentioned occur
+
+	2) If not enough numbers within similar magnitude are added. For example,
+	using the previous example, adding only 5 1/billion first would not change
+	anything; 5*(1/billion) + 1 would only result in 1 again because not
+	enough numbers of the lower magnitude were added.
+

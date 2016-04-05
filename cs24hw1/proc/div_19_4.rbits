@@ -1,0 +1,8 @@
+0013 # Dividend
+0004 # Divisor
+0000 # Zero
+8000 # 0'd bits with leading 1
+FFFF # Remainder*
+FFFF # ~Remainder & [masked]Remainder*
+FFFF # Quotient
+FFFF # Remainder
