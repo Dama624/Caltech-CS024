@@ -1,0 +1,12 @@
+n = n & (n - 1)
+This expression takes n and performs a bitwise AND with n - 1.
+More importantly, this expression deletes the least-significant bit (the bit
+that is set as 1 on the right-most side). This is because for a number in
+which a 1 bit is followed by 0 bits, subtracting by 1 will invert all bits
+starting from the 1. Taking the bitwise AND will result in the same bits
+prior to the 1 bit, but 0 bits following after.
+Since this expression deletes 1 bits starting from the least-significant bit,
+we can simply increase the count of 1 bits after each expression call (rather
+than shifting and going through each bit separately).
+We call this expression as many times as there are 1 bits in the number,
+which is (possibly) fewer than the total number of bits in the number.
