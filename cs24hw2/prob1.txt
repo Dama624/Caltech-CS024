@@ -1,0 +1,27 @@
+Going down the code, one line at a time:
+movl 8(%ebp), %eax
+If 8(%ebp) = x: move x (a doubleword) into the register %eax
+(Current expression: x)
+
+imull $3, %eax
+Multiply x by 3. Important to note is that %eax only stores the bottom 4 bytes
+of the result. Furthermore, imull is a 4-byte signed multiplication operation.
+Only the bottom 4 bytes remain in %eax; since the sign bit is in the top 4
+bytes, whatever sign x had will be lost. Furthermore, if multiplying by 3 
+results in a number that exceeds 4 bytes, the bits after the 32nd bit will be
+unused.
+(Current expression: 3x)
+
+addl $12, %eax
+Add 12 to the value stored in %eax.
+(Current expression: 3x+12)
+
+imull 8(%ebp), %eax
+Multiply x to the value stored in %eax. The same restrictions as previously
+mentioned apply - particularly the byte cutoff.
+(Current expression: x(3x+12))
+
+subl $17, %eax
+Subtract 17 from the value stored in %eax.
+(Final expression: x(3x+12)-17 = 3x^2 + 12x - 17)
+

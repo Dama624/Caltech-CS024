@@ -1,0 +1,19 @@
+Register %eax holds x; Register %ecx holds y
+
+leal 6(%eax), %edx
+%edx <- x + 6
+
+leal (%eax, %ecx), %edx
+%edx <- x + y
+
+leal (%eax, %ecx, 4), %edx
+%edx <- x + y * 4 = x + 4y
+
+leal 7(%eax, %eax, 8), %edx
+%edx <- 7 + x + x * 8 = 9x + 7
+
+leal 0xA( , %ecx, 4), %edx
+%edx <- 10 + 0 + y * 4 = 4y + 10
+
+leal 9(%eax, %ecx, 2), %edx
+%edx <- 9 + x + y * 2 = x + 2y + 9

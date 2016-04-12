@@ -1,0 +1,28 @@
+Stack starts at 0x1008 and moves downwards
+
+0x1008: 3 // arg = 3 prior to call
+0x1004: ? // Return address back to main()
+
+---------------------- fact(3) called
+
+0x1000: ? // fact(3) call's base pointer address
+0x0FFC: 2 // within fact_continue(3), arg-1 (3 - 1) pushed
+0x0FF8: 0x2030 // Return address to fact_resume(3)
+
+---------------------- fact(2) called
+
+0x0FF4: 0x1000 // base pointer for fact(2)
+0x0FF0: 1 // In fact_continue(2), arg-1 (2 - 1)
+0x0FEC: 0x2030 // Return address to fact_resume(2)
+
+---------------------- fact(1) called
+
+0x0FE8: 0x0FF4 // base pointer for fact(1)
+0x0FE4: 0 // In fact_continue(1), arg-1 (1 - 1)
+0x0FE0: 0x2030 // Return address to fact_resume(1)
+
+---------------------- fact(0) called
+
+0x0FDC: 0x0FE8 // base pointer for fact(0)
+
+// fact_return reached

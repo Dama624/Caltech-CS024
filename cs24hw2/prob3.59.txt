@@ -1,0 +1,69 @@
+Looking at jump table, we see 6 doublewords of memory, suggesting 6 switch
+cases.
+
+The first statement points to line 10, in which %eax (i.e. "x") is shifted
+left 0x2 (2 base 10) times. A bit shift leftwards n times is equivalent to
+multiplying the value by 2^n; in this case, we multiply x by 2^2. Afterwards,
+we jump to address 804844b (line 17), in which we pop our base pointer, and
+then we return.
+
+The second statement points to 0x08048448 (line 16), in which 0xa (i.e. 10
+base 10) is added to x. From there, we move onto line 17, from which we
+return as before.
+
+The third statement also points to line 10, so we follow the same path as we
+did before.
+
+The fourth statement points to line 12, in which x is binary [arithmetic]
+shifted right 2 times. Opposite to shifting leftwards, shifting right divides
+the number by 2^n (as long as the number is not -1 base 10); 
+thus, in this case we divide x by 2^2=4. Line 13 jumps us to line 17, and then
+we return as before.
+
+The fifth statement points to line 14. Here, we perform a load effective
+address: lea (%eax, %eax, 2), %eax. We effectively perform the operation:
+x = x + x * 2 = 3x. We continue on to line 15, in which we perform the imul
+operation: x = x * x = x^2. We then add 0xa (10 base 10) to x in the line
+after. Then we return, again.
+
+The sixth statement points to line 15. We have already gone through this
+path, suggesting a fall through. x = x^2 in line 15, and then we add 10, then
+return.
+
+We now look at the lines prior to the calling of the jump table (in which
+we can understand the values of n that call the table's operations).
+After initializing x and n, we subtract 0x32 (50 base 10) from n (line 6). We
+then compare the value to index 5 (line 7). n - 50 > 5, we jump to line 16, in
+which we add 10 before returning.
+
+From this information, we can now build our C code:
+
+int switch_prob(int x, int n)
+{
+	int result = x;
+
+	switch(n) {
+
+		case 50:
+		
+		case 52:
+			result *= 4;
+			break;
+
+		case 53:
+			result /= 4;
+			break;
+
+		case 54:
+			result *= 3;
+
+		case 55: 
+			result = result ^ 2;
+
+		default:
+			result += 10;
+
+	}
+
+	return result;
+}
