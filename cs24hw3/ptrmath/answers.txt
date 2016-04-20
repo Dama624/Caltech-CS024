@@ -1,0 +1,32 @@
+Answers for the "Arrays, Pointer Arithmetic, and Structs" section of CS24 HW3:
+
+1) From the lowest address to highest (each byte separated by "|"):
+00|00|00|FE|EB|DA|ED|00|00|00|00|00|EB|AB|EF|AC
+         ^                          ^
+         int* (p+3) [p is 1 byte]   (int* p)+3 [p is 4 bytes]
+The values are reversed because IA32 is little endian.
+
+2)      Member      | Offset (bytes) | Size (bytes)
+-----------------------------------------------------
+       int id       |       0        |      4
+-----------------------------------------------------
+     char code      |       4        |      5
+-----------------------------------------------------
+  (Unused/Padding)  |       9        |      3
+-----------------------------------------------------
+ struct entry* next |      12        |      4
+
+ 3 bytes unused; 16 bytes total
+
+3)
+offset = 71;
+
+Line 1 establishes that the pointer *arr points to the entry to a block
+of memory that holds enough for 10 "entry" structs (i.e. 10 * 16 bytes).
+arr[4] (i.e. *(arr + 4)) must then point to the start of the 4th "entry"
+(4 * 16 bytes down).
+The "entry" member "code" is located 4 bytes from the start of the
+entry, and code[3] writes to the 3rd byte from the start of "code".
+Since *p is a char, our offset must be counting by byte units:
+offset = 4th entry + offset to code + 3rd byte from code
+       = (4 * 16) + 4 + 3 = 64 + 4 + 3 = 71

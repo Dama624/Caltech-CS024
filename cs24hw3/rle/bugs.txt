@@ -1,0 +1,59 @@
+Bug 1:
+Line 44: add     (%ecx, %esi), %bl   
+Line 45: add     $1, %esi  
+
+We are trying to store the size of the output file, which will be the decoded
+RLE. What these lines do is start from the start of the input RLE, add the
+current value to %bl (the lower byte of %ebx), move the pointer to the next
+character in the input RLE, add that to %bl, and so on. This means, for an
+example input 255A122A, it adds 255 to %bl, then adds "A" to %bl, then 122,
+then "A". Aside from the issue of adding "A" at all, it also overflows after
+the initial 255 because %bl can only store 1 byte.
+
+Solve by adding directly to %ebx to avoid overflow. Then increase loop counter
+by 2 every iteration so only the number of characters is counted (i.e. 255
+and 122 in our example RLE). The total sum of characters will be the number of
+bytes required to store all characters (1 char = 1 byte). 
+____________________________
+
+Bug 2:
+Line 58: push    %ebx 
+Line 59: call    malloc
+Line 60: add     $4, %esp 
+
+malloc, according to lecture notes, follows cdecl convention; relevantly, this
+means that malloc can modify any registers in %eax, %ecx, and %edx. According
+to gdb, in this case, malloc does overwrite the contents of %ecx (which is
+currently holding the pointer to our input data buffer).
+
+Solve by pushing %ecx onto the stack before calling malloc. Pop %ecx back
+after the malloc call.
+____________________________
+
+Bug 3:
+Line 76: mov     %bl, (%eax, %edi)
+Line 77: dec     %bh
+Line 78: jnz     write_loop
+
+While the value of %bh (holding the current number of repetitions) decreases
+for each iteration of write_loop, %edi does not change. Because %edi does
+not change, %bl is moved to the same location in memory, %bh times.
+
+Solve by incrementing %edi by one byte before the jump. We do this before
+Line 77: dec     %bh (so that this line determines the jump).
+____________________________
+
+Bug 4:
+Line 44: add     (%ecx, %esi), %ebx
+
+There are several issues with this line. We need to first specify that the 
+first byte of M[ecx+esi], that is the # of the characters, should be added.
+However, the solution is not simply replacing "add" with "addb". This is 
+because using addb will cause the values added to ebx to overflow past 1 byte,
+since addb will ignore the fact that ebx has 4 bytes available for use.
+
+The solution is to move 1 byte of (%ecx, %esi) to a sort of buffer, %edx (i.e.
+perform a moveb). From there, we can do an addl between %edx and %ebx so that
+we use the full 4 bytes to store the total sum. Since we addl %edx and %ebx,
+we need to be sure to zero out the rest of %edx before we move the byte from 
+the input.

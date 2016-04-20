@@ -1,0 +1,36 @@
+a)
+Address that did not originate from myalloc():
+This can have widely ranging consequences, depending on what the address
+contained. If the address 4 bytes before the input contains a value that can
+be interpreted as a positive signed integer, then myfree() does nothing 
+(since it believes it is acting in a block of memory that is already free).
+If the int before the input address "X" is interpreted as a negative signed
+integer, then myfree() will invert the sign of X, as well as the sign of the
+"integer" located X bytes from the input address. Since X can be any value
+(like large), the program will likely segfault.
+
+Address contained within a memory block returned by myalloc():
+The issue is similar to the above, especially since an address within a
+memory block likely contains values not intended to be interpreted as
+integers. 
+
+Address that has already been freed:
+This is already addressed in the program; myfree() first checks if the header
+value is negative. If not, then the input block contains no data (is free),
+and myfree() throws an error.
+
+
+b)
+The first part of a) can be resolved by keeping track of the start and end
+addresses of the memory pool, and throwing an error if the input address is
+outside the range of the start and end addresses.
+
+The second part of a) can be resolved by adding additional information to the
+header/footers such as an extra tag (e.g. a character). By making sure the
+header/footer contains this specific tag in a specific address, we can make 
+sure that the address we're inputting into myfree() is appropriate.
+Unfortunately, this also means more space is dedicated to identifying blocks 
+(8 bytes are already used for a signed int header & footer). This could also
+make data aligning more difficult in relevant systems.
+
+The third part of a) has already been resolved.
