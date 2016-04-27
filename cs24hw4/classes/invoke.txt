@@ -1,0 +1,9 @@
+# We ignore concerns re: callee/caller-save registers
+# Assumes getVolume follows cdecl convention
+# The result is stored wherever getVolume stores its result
+
+movl 8(%ebp), %edx # edx contains address of subclass data struct
+movl (%edx), %ecx # ecx contains address of subclass class struct
+movl (%ecx), %eax # eax contains address of getVolume function
+pushl %edx # the address of our data struct is input to getVolume
+call (%eax) # call the function
