@@ -1,0 +1,18 @@
+The program has 3 load/store operations per element of the array. With this
+arbiter, each load/store operation takes at least 1 more cycle. Given an array
+of length 100, the program will thus take 3 * [at least] 1 * 100 = at least
+300 extra cycles.
+
+With two CPUs, the current program could stall in trying to perform a
+load/store operation while the program is executing on the other processor. In
+the worst case scenario, the program stalls for the entire duration of the
+other program. That is, the assumption is that the other processor does not
+let go of the bus until its program has finished running.
+Assuming that no other program is running on the system, it takes 300 extra
+cycles for one processor to finish the program. The program itself takes
+9 (# of instructions in loop) * 100 (# of elements) + 1 (first instruction
+prior to loop) = 901 cycles. If the current processor hangs on a load/store
+operation in waiting for the other processor to finish the program, it must
+wait 901 + 300 = 1201 cycles, before taking another extra 300 cycles to finish
+the program. The total extra time the program takes is then about 1500 extra
+cycles.

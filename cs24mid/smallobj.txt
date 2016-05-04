@@ -1,0 +1,67 @@
+1) Likely not. An explicit free-list is only used to keep track of allocated
+memory. It does so by tracking the amount of free memory, so that it can
+quickly allocate more memory if it needs to (by allocating from the list of
+free blocks) or deallocate. However, the free-list alone does not coalesce
+neighboring free blocks. Normally, the lack of coalescing would lead to
+memory fragmentation. Allocation failure due to memory fragmentation tends to
+happen when allocating variable-sized pieces of memory, however. In such a
+case, one can imagine that without coalescing, two adjacent small fragments
+of memory cannot each hold a larger piece of memory that would normally fit
+if the fragments were coalesced together.
+In this problem, however, memory fragmentation is limited because of the 
+standardized allocation sizes. Because each allocated block is no larger
+than 100 bytes and are approximately the same size, each block of freed 
+memory should be able to approximately hold any future allocated block.
+
+2) Standardizing allocation size may lessen the danger of memory
+fragmentation, but it also has its limitations, primarily in terms of
+efficiency. Consider the case in which the user wishes to store a single int
+(4 bytes). Using this system, the program would have to allocate ~100 bytes
+just for 4 bytes of useful data. Now consider the case in which the user
+wishes to store 150 bytes of data. The program would have to split the
+data into 100 and 50 byte chunks, which, aside from accessing inefficiency
+(it takes two reads to read the whole 150 bytes), could also lead to increased
+risk of data corruption (either of the two blocks can be corrupted to destroy
+the whole data).
+
+3) The most notable benefit I can think of comes from bookkeeping; by
+separating the heap into large chunks, one can more easily locate data. Rather
+than searching through the entire heap, if one knows which chunk the data is
+located in, they can search only through that chunk.
+The most notable issue I can think of comes from the same issue as the
+general purpose allocator, on a larger scale. When storing large data, if
+a chunk cannot hold the entire piece, another large chunk must then be
+allocated. If the data is split and stored in different chunks, one must be
+careful about freeing full chunks - freeing a chunk containing partial data
+could destroy that data. And yet, if the data is not split and instead
+forces a new large chunk to be formed if an already existing one cannot 
+hold it, then we run into space inefficiency, in which we allocated a large
+chunk just to hold this specific piece of data.
+Furthermore, by not actually freeing chunks when they fill up, this allocator
+naturally uses much more memory than the general-purpose allocator.
+
+4) The final point of the previous question particularly holds for this
+behavior. If objects have a long lifetime in this allocator, they will remain
+in the large chunks for a long period of time. If they remain active for
+long periods of time, then the entire chunk cannot be freed for that period.
+However, since freed memory inside these chunks are not actually freed,
+eventually these large chunks will contain the long-living data surrounded by
+garbage that should be freed, but cannot be. 
+
+5) First, we must modify it such that data larger than the remaining space on
+a chunk can hold must create a new chunk. Though space inefficient, splitting
+data between large chunks simply poses too large a risk. We can easily do so
+by comparing the size of the data we must allocate to the remaining size of
+a chunk; if the size is too large, we create a new chunk. We should also
+keep a list of each chunk and their remaining size, so that allocating smaller
+data can be done on past chunks.
+Then, we must account for long living data. We can set up our allocator in
+such a way that in certain intervals of allocation, we see if any data has
+been allocated into a chunk. If no new data has been allocated into a chunk,
+that chunk likely contains long living data that cannot be freed. Since we
+know where that data is located (it will be the "unfreed" data within that
+chunk), we can copy that data to a new chunk. Afterwards, we can clear the
+entire old chunk. Long living data from other cleared chunks should also be
+moved to this new chunk. Upon coalescing all our long-living data into this
+new chunk, we can make bookkeeping and memory management simple; most long
+living data will exist in specific chunks.

@@ -1,0 +1,50 @@
+1) High-level pseudocode:
+reverse_list(LinkedList *list)
+{
+	Initialize LinkedList *new
+	Initialize ListNode *element;
+
+	while (list->head is not NULL)
+	{
+		// Remove the first-most node from the list
+		// "Store" the node into element
+		element = list->head;
+		list->head = list->head->next;
+
+		// Append the removed node to the head of the new list
+		element->next = new->head;
+		new->head = element;
+	}
+	Set list = new
+}
+
+2) 
+while (list->head)
+{
+	// Remove the first-most node from the list
+	// "Store" the node into element
+	element = list->head;
+	list->head = list->head->next;
+
+	// Append the removed node to the head of the new list
+	element->next = new->head;
+	new->head = element;
+}
+
+|
+|
+v
+
+Check list->head = 0
+If so, jump to END
+
+WHILE:
+element = list->head;
+list->head = list->head->next;
+element->next = new->head;
+new->head = element;
+Check list->head != 0
+If so, jump to WHILE
+
+END:
+Return

@@ -1,0 +1,30 @@
+Wrap the first 4 lines of the loop (LD, LD, ADD, ST) in a BLK-BUN instruction.
+In other words:
+Loop:
+	BLK
+	LD R0, R3
+	LD R1, R4
+	ADD R3, R4, R5
+	ST R5, R7
+	BUN
+	INC R0
+	...
+
+Single CPU case:
+Previously, the program took at least 300 extra cycles, since there were three
+load/store operations per element of the array and each load/store operation
+incurred a (at least) 1 cycle penalty. However, in our modification, by 
+coalescing all 3 load/store operations into a single BLK-BUN instruction, our
+new penalty is at least 1 extra cycle per element of the array (since we are
+using one BLK-BUN pair per element). This reduces our final cost from at least
+300 cycles to at least 100 cycles.
+
+Both CPUs case:
+Rather than hanging on a load/store operation to wait for a program to finish,
+in this case our program alternates a batch of operations between the
+processors (with each batch representing the load/store operations for a
+single element). Each element now takes 5 extra cycles in the worst case (call
+for loading [1], call conflicts with other CPU's loading/storage operations,
+other CPU performs the load/store and add [4], current CPU performs load/store
+and add). Since there are 100 elements, we reduce our worst case extra cost
+from 1500 to 500 cycles. 
