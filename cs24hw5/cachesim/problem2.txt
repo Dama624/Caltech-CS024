@@ -1,0 +1,31 @@
+d)
+Direct-mapped cache: S sets, 1 cache line per set
+B = 32 bytes
+S = 8192 bytes / 32 bytes = 256 cache-sets
+E = 1 line per set
+
+./heaptest 32:256:1
+Miss-rate: 2.40%
+
+e)
+Fully associative cache: 1 set, all lines
+B = 32 bytes
+S = 1 set
+E = 256 cache-lines
+
+./heaptest 32:1:256
+Miss-rate: 2.45%
+
+g)
+Direct-mapped cache:
+./heaptest 32:256:1
+Miss-rate: 2.40%
+
+Fully associative cache:
+./heaptest 32:1:256
+Miss-rate: 2.26%
+
+Improvement: (2.40 - 2.26) / 2.40 = 0.0583 -> 5.83%
+
+May seem small, but we already saw in Problem 1 that a small reduction in miss
+rate can drastically improve performance.

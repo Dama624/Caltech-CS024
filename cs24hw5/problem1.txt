@@ -1,0 +1,23 @@
+3 GHz -> 3 * 10^9 cycles per second
+
+a)
+Let x = miss rate
+
+[x * 100 cycles/instruction] + [(1 - x) * 1 cycle/instruction]
+= [100x cycles/inst] + [(1 - x) cycles/inst]
+= (1 + 99x) cycles/inst
+
+(1 + 99x) cycles/inst * (1 / (3 * 10^9)) sec/cycle = (1 / 750M) sec/inst
+(1 + 99x) / (3 * 10^9) sec/inst = 1 / 750M sec/inst
+1 + 99x = (3 * 10^9) / 750M
+99x = ((3 * 10^9) / 750M) - 1
+x = 0.0303
+
+Miss rate = 3.03%
+
+b)
+Redo the calculations above, but instead of 750M inst/sec use 1.5B inst/sec.
+99x = ((3 * 10^9) / 1.5B) - 1
+x = 0.0101
+
+Miss rate = 1.01% -> Reduce the cache miss rate by about 2%, or a third.
