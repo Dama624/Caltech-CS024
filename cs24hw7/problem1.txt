@@ -1,0 +1,9 @@
+Though the numbers produced appear to all be matched, the immediate problem
+I see in the program's output is that the program is only returning results
+from producer 0 (even though there are two producers). Cooperative thread
+execution is not fair in this program. Producer 0 fills the buffer first
+because it is the first to enter its while loop. Once the buffer is filled,
+Producer 0 yields. Because the buffer is filled, Producer 1 is then also
+forced to yield. The consumer then runs, freeing some values in the buffer.
+Since Producer 0 yielded first, it runs again and fills the buffer again.
+Producer 1 is never allowed to stop yielding. The main issue is that the threads do not yield until the buffer is filled, thus one thread is always filling the buffer while the other thread(s) must continue yielding once the buffer is filled. 
