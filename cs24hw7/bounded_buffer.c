@@ -85,6 +85,8 @@ BoundedBuffer *new_bounded_buffer(int length) {
  * thread if the buffer is full.
  */
 void bounded_buffer_add(BoundedBuffer *bufp, const BufferElem *elem) {
+    // We only want one thread modifying the buffer at a time
+    __sthread_lock();
     // Decrement the count of available space (we're adding)
     // Blocks when available count = 0 (buffer is full)
     semaphore_wait(bufp->avail);
@@ -92,6 +94,7 @@ void bounded_buffer_add(BoundedBuffer *bufp, const BufferElem *elem) {
     bufp->count++;
     // Increment the count of used space
     semaphore_signal(bufp->used);
+    __sthread_unlock();
 }
 
 /*
@@ -99,6 +102,8 @@ void bounded_buffer_add(BoundedBuffer *bufp, const BufferElem *elem) {
  * thread if the buffer is empty.
  */
 void bounded_buffer_take(BoundedBuffer *bufp, BufferElem *elem) {
+    // We only want one thread modifying the buffer at a time
+    __sthread_lock();
     // Decrement count of used space (we're freeing)
     // Blocks when there are no used elements (buffer is empty)
     semaphore_wait(bufp->used);
@@ -109,4 +114,5 @@ void bounded_buffer_take(BoundedBuffer *bufp, BufferElem *elem) {
     bufp->first = (bufp->first + 1) % bufp->length;
     // Increment count of available space
     semaphore_signal(bufp->avail);
+    __sthread_unlock();
 }

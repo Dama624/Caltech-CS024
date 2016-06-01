@@ -1,0 +1,44 @@
+Answers to HW8 Questions
+========================
+
+a)  How to detect when a page is accessed?
+We only care to detect access at least once, so we can keep a flag variable that keeps track of whether the page has been accessed before. Let flag = 0 be not accessed, and = 1 be accessed. We initialize the flag to 0. We also set the page permission to NONE. When the page is accessed (whether it is
+for a read or write), an access error will be thrown. Our signal handler can
+then, for an access, simply give read permission to the page and set the 
+flag = 1 (the error wouldn't be thrown in the first place if the page weren't trying to be accessed).
+
+b)  How to detect when a page becomes dirty?
+We follow directly from a). We have only given read permission to the page. Therefore, if we want to write to the page, another access error will be thrown. This time around, we can check to make sure the page has read access. If it does, then the only reason an access error would be thrown would be that a write was attempted when writing was not allowed (we can additionally confirm if the page does not have write permission). We give write permission to the page in this case, and (since the access flag is already marked) we set the dirty flag.
+
+
+f)  Page-load rate of "test_matrix -m 1024 1000" using RANDOM policy:
+Total page loads: 54406
+
+
+g)  Page Replacement Policy #1 (fill in the information below)
+
+Name of policy you chose to implement: FIFO 
+
+Below, give the command-line for invoking the matrix-test program for a
+1000x1000 matrix, with a maximum of 1024 resident pages.  (If multiple
+steps are required, list them all here.)
+
+  >>>./test_matrix_fifo -m 1024 1000
+
+Give the resulting page-load rate of the above command: 47944 
+
+
+h)  Page Replacement Policy #2 (if you implemented two policies)
+
+Name of policy you chose to implement: Aging policy 
+
+Below, give the command-line for invoking the matrix-test program for a
+1000x1000 matrix, with a maximum of 1024 resident pages.  (If multiple
+steps are required, list them all here.)
+
+  >>>./test_matrix_age -m 1024 1000
+
+Give the resulting page-load rate of the above command: 88392 (?)
+
+Though I'd understand why the process would take longer (since we periodically adjust the age of the pages), I'm unsure as to how the program took more page loads.
+
