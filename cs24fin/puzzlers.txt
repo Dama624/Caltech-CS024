@@ -1,0 +1,17 @@
+Process Puzzlers
+================
+
+1) We follow the code starting at main(). We begin by making the signal SIGUSR1 call the function handler1. We then clone the current process into a parent (pid returns id of child != 0 in parent's scope), and a child (whose pid = 0 in child's scope). As a result, only the child process runs the first if statement.
+The child replaces SIGUSR1 so that it runs handler2 rather than 1. It then sends SIGUSR1 to the parent process and stalls.
+In the parent process, it waits for the child process to send a signal.
+
+Many things can happen at this point. If the child sends the signal before the parent is ready to receive it, the parent will go to handler1, send "zip" to a buffer, flush it out to stdout (it will be visible on the terminal), the send a signal to the child. The child receives the signal, prints "zap" (but may not be visible without flushing it out), and exits. Once the child exits, the parent returns from wait with p != 0, and "zoom" is printed. 
+
+Alternatively, the parent has reached the wait, and receives SIGUSR1 from the child. Then the parent goes to handler1 and prints "zip". However, since the child broke the wait, the parent can then also print "zoom" afterwards. Finally, the signal from handler1 reaches the child and "zap" is printed.
+
+2) Possible outputs:
+1234000
+2300140
+
+Things of note is that 4 can only be printed after that process leaves the wait status. Since no process is sending signals, the only other way to exit wait is to kill a process with exit(0). 1 is printed when exiting, thus 4 can only be printed after 1.
+

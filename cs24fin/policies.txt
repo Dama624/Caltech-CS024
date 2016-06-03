@@ -1,0 +1,16 @@
+Page Replacement Policies and Scan Resistance
+=============================================
+
+1) a) FIFO is a combination of frequency and recency of access; it does not particularly favor one over the other. If a page is frequently accessed, it does not change position in the queue. However, it does mean that as soon as it is removed, it can be replaced at the back of the queue. If a page is recently accessed, it receives the same treatment of being moved to the back of the queue.
+
+   b) Second Chance / Clock prefers frequency of access over recency of access. The system is fairly binary - if a page has been accessed recently, the accessed bit is cleared and the page remains in the queue. If a page is accessed frequently, the accessed bit can reliably remain on, thus for every time it gets cleared the pages can remain in queue. 
+
+   c) Aging focuses on the frequency of access, but is more sensitive to the recency of access than Second Chance / Clock. On a regular interval, all pages are increased in age (through bitshifting right), but those that have been accessed decrease in age (by setting the most significant bit). As a result, if a page is frequently accessed, its age will reset often during the periodic checks, thus keeping the page for longer. However, because the system is not a simple binary "has this page been accessed?" but rather features a decaying age system since last access, the recency of access is also significant. 
+
+2) As mentioned above, the Aging policy is susceptible to scans, but it is more robust than a policy such as Second Chance. In Second Chance, once a page is accessed once, on the second pass it is already marked for removal. However, the Aging policy incorporates a sort of decaying age system since the last access, so the page is not immediately marked for removal after last access.
+
+3) a) It corresponds fairly well in the sense that it greatly prioritizes the removal of first accesses over future accesses. By removing from A1 first, first accesses are always removed before pages that have been accessed more than once. However, it is not quite the same, since LRU-2 places focus on the second most recent access time, while 2Q places more of a focus on repeated accesses (since a page accessed again is moved to the front of Am, and removals begin from the back). 
+
+   b) During an interrupt, go through the pages in A1 and clear any accessed bits. If in a future interrupt the same pages have the accessed bits set again, move them into Am (one can identify pages by their memory start address). For the pages in Am, similarly to A1, clear accessed bits during timer interrupts. When a page fault occurs, prioritize removing pages from A1 before Am, and prioritize removing pages with a cleared accessed bit. 
+
+   c) Though it approximates the 2Q algorithm via maintaining two queues, it is limited in that only a fixed number of pages can be stored within the queues. It can identify page accesses that are part of a scan (and not) through its two queues, but it has trouble identifying pages past the fixed limit of resident pages. 

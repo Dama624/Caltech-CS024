@@ -1,0 +1,56 @@
+Sieve of Eratosthenes
+=====================
+
+1.  Brief machine specifications:
+CS24 Virtual Machine
+Processor: 1 Processor, Execution cap 100%
+Physical memory: 4096 MB
+Operating System: Linux (Arch distro)
+
+Host Machine
+Processor: Intel Core i5-4590 @ 3.30GHzx4
+Physical memory: 16.0 GB
+Operating System: Windows 10
+
+Value of N for running the program: 3 500 000 000
+
+
+Output of "time ./psieve N > /dev/null":
+Using maximum value of 3500000000
+
+Total primes found:  167279333
+./psieve 3500000000 > /dev/null 56.70s user 0.12s system 97% cpu 58.019 total
+
+
+Size of bit-vector for N, in bytes:  
+3,500,000,000 is even, so the value before is used: 3,499,999,999
+B = (P - 3) / 2
+B = (3499999999 - 3) / 2
+B = 1749999998
+3,499,999,999 mapped to bit B in vector
+Need bits from index 0 -> 1,749,999,998
+Need 1749999998 + 1 bits -> 1,749,999,999 bits
+1 byte = 8 bits
+218,749,999.875 bytes
+
+2.  Cache performance behavior of prime sieve:
+
+a)  Discussion of stride reference pattern:
+During the first sqrt(N) numbers (and while scanning for prime numbers afterwards), the program accesses the bit-vector one bit at a time (p increases by 2 for every iteration of the for-loop; increasing p by 2 increases bit index by 1). 
+
+However, during the first sqrt(N) numbers, if a prime is found, [odd] multiples of the prime must be cleared out. At this point, rather than the stride being single bits, each iteration of the while loop increases p by 2p. Each increase by 2p, when translated to bit indices, is equivalent to a stride length of p bits.
+
+We note that, though the single bit stride remains constant throughout the program, the p bit stride here is dependent on the current value of p. As the program continues to execute, the value of p increases, and thus the stride length increases as well.
+
+b)  Discussion of locality and cache hits/misses:
+Good locality occurs in any area where the stride legnth is a single bit. Because the bits are located right next to each other, moving the bit index by 1 preserves good locality. Thus, seeking through the first sqrt(N) numbers demonstrates good locality for as long as the current p value is not prime. Unfortunately, once we hit p = prime, we must enter the while loop, which uses a different stride reference pattern. Alternatively, seeking through the values after the first sqrt(N) always demonstrates good locality (because we are simply traversing through the vector to search for prime numbers).
+
+The portion mostly likely to suffer cache misses is the while loop, in which multiples of p are marked as composite. As previously mentioned, the stride depends on p, and increases as p increases. Thus, at low p, the stride is relatively low, so locality is somewhat preserved. At higher p, however, the stride greatly increases in length, losing the locality and resulting in cache misses.
+We note that L1 cache has 32KB of space, or 256000 bits. Once p > 25600, finding any subsequent multiple of p will cause a cache miss (because the stride necessary will exceed the available cache space).
+L2 cache has 1 MB of space, or 8e6. The same applies as above; once p > 8e6, finding multiples of p will cause a cache miss for every multiple.
+
+3.  Suggestions for improving the sieve's performance:
+The program primaily has cache problems because it traverses through the entire bit vector without locality.
+We can improve this by, rather than traversing the entire vector, segmenting the vector.
+We can divide the range from 2 to N into segments smaller than sqrt(N). We also create a vector/array of the same size as the segment, starting from sqrt(N) + 1. We treat this segment as if it were the whole vector; we run the sieve algorithm on the first segment as usual, and eliminate multiples of primes in the second segment as usual.
+By separating the original data structure into smaller pieces, we can better preserve locality and improve cache performance.

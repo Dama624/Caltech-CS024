@@ -1,0 +1,10 @@
+Lottery Scheduling
+==================
+
+1) The lottery scheduler could be unfair if it gave certain processes more tickets than others. By doing so, it would naturally tend to give certain processes a higher chance to run than others. Some processes could even never get any tickets. To ensure fairness, the lottery scheduler must give processes a nonzero, equal number of tickets. Furthermore, the scheduler should impose a max time-slice on running processes so other processes can have a chance to run. 
+
+2) Priority with this scheduler is equivalent to assigning more tickets. With more tickets, the probability of receiving CPU time increases. Thus, "nicer" processes have fewer tickets.
+
+3) Interactive processes generally require the CPU for a shorter amount of time than compute-intensive ones. Our scheduler could first examine how much of the time-slice a process is consuming before blocking/yielding. Based on that result, using a relative scale to other processes, the scheduler can hand out tickets appropriately. To distinguish between interactive and compute-intensive processes, the scheduler could also examine I/O requests. Though some interactive processes use less time-slice than others, both should definitely make more calls to I/O than compute-intensive processes. We could incorporate a sort of tier system, where judging by I/O usage, the scheduler hands out more or less tickets. An interactive process changing over time to be compute-intensive should be detected by polling the above-mentioned statistics over time. As a process changes in behavior, the number of tickets given to it can then be adjusted over time as well.
+
+4) Given the current system, it could be possible, but rare. The compute-intensive task would have to appear almost as if it were an interactive process. However, in such a situation, there would be no reason to try to resolve the issue. Probabilistically, most of the processes would be scheduled appropriately, so having rare exceptions should not affect our efficiency much. Furthermore, if a process were so similar to another, then there would be little difference over which received more priority.

@@ -1,0 +1,5 @@
+Accumulator Implementation
+==========================
+
+d) The implementation is lock-free. If other threads were off sync so that they always updated while thread A was comparing, then the compare_and_swap in thread A will constantly note that *accum != old_value. As a result, the function will return that *accum could not be updated, so thread A will loop once more, updating old_value. However, if other threads updated *accum soon after this happened, then thread A's compare_and_swap will again return that *accum could not be updated. If this continues, then it is possible for thread A to never get to update *accum. 
+
